@@ -8,7 +8,8 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class ConversationArchivedIngestRequest
-        extends BaseConversationAuditIngestRequest {
+        extends BaseConversationAuditIngestRequest
+         {
 
     @NotNull
     private String fromStatus;

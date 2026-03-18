@@ -1,5 +1,6 @@
 package com.apargo.service.auditlog.service.ingestion.messaging;
 
+import com.apargo.service.auditlog.dto.request.ingest.messaging.base.BaseConversationAuditIngestRequest;
 import com.apargo.service.auditlog.dto.request.ingest.messaging.conversation.*;
 import com.apargo.service.auditlog.enums.ConversationAuditEventType;
 import com.apargo.service.auditlog.model.messaging.MessagingConversationAuditEvent;
@@ -115,7 +116,7 @@ public class ConversationAuditIngestionService {
     }
 
     // closed, reopened, archived all share the same shape — extracted to avoid repetition
-    private void save(BaseConversationStatusIngestRequest req,
+    private void save(BaseConversationAuditIngestRequest req,
                       ConversationAuditEventType type,
                       String fromStatus,
                       String toStatus) {
