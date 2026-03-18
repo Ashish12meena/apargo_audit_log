@@ -4,17 +4,20 @@ spring:
 
   data:
     mongodb:
-      host: cluster0.sw3tj.mongodb.net
-      database: audit
-      username: root
-      password: ashishmongo123
-      authentication-database: admin
+      uri: mongodb+srv://root:ashishmongo123@cluster0.sw3tj.mongodb.net/audit
 
+  kafka:
+    consumer:
+      group-id: auditlog-consumer
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    listener:
+      ack-mode: MANUAL
 
-# spring:
-#   application:
-#     name: auditlog
-
-#   data:
-#     mongodb:
-#       uri: mongodb+srv://root:ashishmongo123@cluster0.sw3tj.mongodb.net/audit
+messaging:
+  audit:
+    topics:
+      campaign: whatsapp.campaign.audit.events
+      conversation: whatsapp.conversation.audit.events
+      dispatch: whatsapp.dispatch.audit.events
