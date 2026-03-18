@@ -1,3 +1,20 @@
 spring:
   application:
     name: auditlog
+
+  data:
+    mongodb:
+      host: cluster0.sw3tj.mongodb.net
+      database: audit
+      username: root
+      password: ashishmongo123
+      authentication-database: admin
+
+
+# spring:
+#   application:
+#     name: auditlog
+
+#   data:
+#     mongodb:
+#       uri: mongodb+srv://root:ashishmongo123@cluster0.sw3tj.mongodb.net/audit

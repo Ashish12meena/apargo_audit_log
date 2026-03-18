@@ -9,5 +9,4 @@ public class AuditlogApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(AuditlogApplication.class, args);
 	}
-
 }
