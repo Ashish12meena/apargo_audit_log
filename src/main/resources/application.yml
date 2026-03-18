@@ -1,14 +1,14 @@
 spring:
   application:
     name: auditlog
+
   profiles:
     include:
       - dev
       # - kafka
 
-  data:
-    mongodb:
-      uri: mongodb+srv://root:ashishmongo123@cluster0.sw3tj.mongodb.net/audit
+  mongodb:
+    uri: mongodb+srv://root:ashishmongo123@cluster0.sw3tj.mongodb.net/audit
 
   kafka:
     bootstrap-servers: localhost:9092
