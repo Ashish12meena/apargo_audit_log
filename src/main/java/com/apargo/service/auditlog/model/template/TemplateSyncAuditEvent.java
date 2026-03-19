@@ -1,6 +1,8 @@
 package com.apargo.service.auditlog.model.template;
 
 import com.apargo.service.auditlog.enums.AuditActorType;
+import com.apargo.service.auditlog.enums.TemplateAuditEventType;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,7 +26,7 @@ public class TemplateSyncAuditEvent {
     @Indexed(unique = true)
     private String eventId;
 
-    private TemplateAuditEvent eventType;
+    private TemplateAuditEventType eventType;
 
     // ── Routing context ───────────────────────────────────────────────────────
     private Long orgId;
