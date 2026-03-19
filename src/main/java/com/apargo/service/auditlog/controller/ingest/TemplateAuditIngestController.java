@@ -1,13 +1,9 @@
 package com.apargo.service.auditlog.controller.ingest;
 
-
-
-
-
 import com.apargo.service.auditlog.dto.request.ingest.template.TemplateAuditIngestRequest;
 import com.apargo.service.auditlog.dto.request.ingest.template.TemplateSyncAuditIngestRequest;
-import com.apargo.service.auditlog.service.ingestion.template.TemplateAuditIngestionService;
-import com.apargo.service.auditlog.service.ingestion.template.TemplateSyncAuditIngestionService;
+import com.apargo.service.auditlog.router.TemplateAuditRouter;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class TemplateAuditIngestController {
 
-    private final TemplateAuditIngestionService templateAuditService;
-    private final TemplateSyncAuditIngestionService syncAuditService;
+    private final TemplateAuditRouter router;
 
     @PostMapping("/events")
     public ResponseEntity<Void> ingestTemplateEvent(
@@ -29,7 +24,7 @@ public class TemplateAuditIngestController {
 
         log.info("Template audit event received: eventType={} eventId={}",
                 request.getEventType(), request.getEventId());
-        templateAuditService.ingest(request);
+        router.route(request);
         return ResponseEntity.accepted().build();
     }
 
@@ -39,7 +34,7 @@ public class TemplateAuditIngestController {
 
         log.info("Template sync audit event received: eventType={} eventId={}",
                 request.getEventType(), request.getEventId());
-        syncAuditService.ingest(request);
+        router.routeSync(request);
         return ResponseEntity.accepted().build();
     }
 }

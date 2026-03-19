@@ -1,96 +1,145 @@
 package com.apargo.service.auditlog.mapper.template;
 
-import com.apargo.service.auditlog.dto.request.ingest.template.TemplateAuditIngestRequest;
-import com.apargo.service.auditlog.dto.request.ingest.template.TemplateSyncAuditIngestRequest;
-import com.apargo.service.auditlog.model.template.TemplateAuditEvent;
-import com.apargo.service.auditlog.model.template.TemplateSyncAuditEvent;
+import com.apargo.service.auditlog.dto.request.ingest.template.*;
+import com.apargo.service.auditlog.dto.request.ingest.template.base.BaseTemplateAuditIngestRequest;
+import com.apargo.service.auditlog.dto.request.ingest.template.base.BaseTemplateSyncAuditIngestRequest;
 import org.springframework.stereotype.Component;
-
-import java.time.Instant;
 
 @Component
 public class TemplateAuditMapper {
 
-    public TemplateAuditEvent toEvent(TemplateAuditIngestRequest req) {
-        TemplateAuditEvent.TemplateAuditEventBuilder builder = TemplateAuditEvent.builder()
-                .eventId(req.getEventId())
-                .eventType(req.getEventType())
-                .orgId(req.getOrgId())
-                .projectId(req.getProjectId())
-                .wabaId(req.getWabaId())
-                .templateId(req.getTemplateId())
-                .actorType(req.getActorType())
-                .actorId(req.getActorId())
-                .occurredAt(req.getOccurredAt())
-                .recordedAt(Instant.now());
+    // ── Flat → Typed DTO (lifecycle) ──────────────────────────────────────────
 
-        // enrich builder based on eventType
-        switch (req.getEventType()) {
-
-            case TEMPLATE_CREATED -> builder
-                    .toStatus(req.getToStatus())
-                    .isDraft(req.getIsDraft());
-
-            case TEMPLATE_SUBMITTED,
-                 TEMPLATE_UPDATED,
-                 TEMPLATE_APPROVED,
-                 TEMPLATE_DISABLED -> builder
-                    .fromStatus(req.getFromStatus())
-                    .toStatus(req.getToStatus());
-
-            case TEMPLATE_REJECTED -> builder
-                    .fromStatus(req.getFromStatus())
-                    .toStatus(req.getToStatus())
-                    .rejectionReason(req.getRejectionReason());
-
-            case TEMPLATE_PAUSED -> builder
-                    .fromStatus(req.getFromStatus())
-                    .toStatus(req.getToStatus())
-                    .rejectionReason(req.getRejectionReason());
-
-            case TEMPLATE_DELETED -> builder
-                    .deletedFromMeta(req.getDeletedFromMeta());
-
-            case TEMPLATE_BULK_DELETED -> builder
-                    .deletedCount(req.getDeletedCount());
-
-            case TEMPLATE_CATEGORY_CHANGED -> builder
-                    .previousCategory(req.getPreviousCategory())
-                    .newCategory(req.getNewCategory());
-        }
-
-        return builder.build();
+    public TemplateCreatedIngestRequest toCreated(TemplateAuditIngestRequest req) {
+        TemplateCreatedIngestRequest dto = new TemplateCreatedIngestRequest();
+        copyBase(req, dto);
+        dto.setToStatus(req.getToStatus());
+        dto.setIsDraft(req.getIsDraft());
+        return dto;
     }
 
-    public TemplateSyncAuditEvent toSyncEvent(TemplateSyncAuditIngestRequest req) {
-        TemplateSyncAuditEvent.TemplateSyncAuditEventBuilder builder = TemplateSyncAuditEvent.builder()
-                .eventId(req.getEventId())
-                .eventType(req.getEventType())
-                .orgId(req.getOrgId())
-                .projectId(req.getProjectId())
-                .wabaId(req.getWabaId())
-                .actorType(req.getActorType())
-                .actorId(req.getActorId())
-                .occurredAt(req.getOccurredAt())
-                .recordedAt(Instant.now());
+    public TemplateSubmittedIngestRequest toSubmitted(TemplateAuditIngestRequest req) {
+        TemplateSubmittedIngestRequest dto = new TemplateSubmittedIngestRequest();
+        copyBase(req, dto);
+        dto.setFromStatus(req.getFromStatus());
+        dto.setToStatus(req.getToStatus());
+        return dto;
+    }
 
-        switch (req.getEventType()) {
+    public TemplateUpdatedIngestRequest toUpdated(TemplateAuditIngestRequest req) {
+        TemplateUpdatedIngestRequest dto = new TemplateUpdatedIngestRequest();
+        copyBase(req, dto);
+        dto.setFromStatus(req.getFromStatus());
+        dto.setToStatus(req.getToStatus());
+        return dto;
+    }
 
-            case TEMPLATE_SYNC_STARTED -> {
-                // no extra fields
-            }
+    public TemplateDeletedIngestRequest toDeleted(TemplateAuditIngestRequest req) {
+        TemplateDeletedIngestRequest dto = new TemplateDeletedIngestRequest();
+        copyBase(req, dto);
+        dto.setDeletedFromMeta(req.getDeletedFromMeta());
+        return dto;
+    }
 
-            case TEMPLATE_SYNC_COMPLETED -> builder
-                    .insertedCount(req.getInsertedCount())
-                    .updatedCount(req.getUpdatedCount())
-                    .deletedCount(req.getDeletedCount())
-                    .skippedCount(req.getSkippedCount())
-                    .durationMs(req.getDurationMs());
+    public TemplateBulkDeletedIngestRequest toBulkDeleted(TemplateAuditIngestRequest req) {
+        TemplateBulkDeletedIngestRequest dto = new TemplateBulkDeletedIngestRequest();
+        copyBase(req, dto);
+        dto.setDeletedCount(req.getDeletedCount());
+        return dto;
+    }
 
-            case TEMPLATE_SYNC_FAILED -> builder
-                    .failureReason(req.getFailureReason());
-        }
+    public TemplateApprovedIngestRequest toApproved(TemplateAuditIngestRequest req) {
+        TemplateApprovedIngestRequest dto = new TemplateApprovedIngestRequest();
+        copyBase(req, dto);
+        dto.setFromStatus(req.getFromStatus());
+        dto.setToStatus(req.getToStatus());
+        return dto;
+    }
 
-        return builder.build();
+    public TemplateRejectedIngestRequest toRejected(TemplateAuditIngestRequest req) {
+        TemplateRejectedIngestRequest dto = new TemplateRejectedIngestRequest();
+        copyBase(req, dto);
+        dto.setFromStatus(req.getFromStatus());
+        dto.setToStatus(req.getToStatus());
+        dto.setRejectionReason(req.getRejectionReason());
+        return dto;
+    }
+
+    public TemplatePausedIngestRequest toPaused(TemplateAuditIngestRequest req) {
+        TemplatePausedIngestRequest dto = new TemplatePausedIngestRequest();
+        copyBase(req, dto);
+        dto.setFromStatus(req.getFromStatus());
+        dto.setToStatus(req.getToStatus());
+        dto.setRejectionReason(req.getRejectionReason());
+        return dto;
+    }
+
+    public TemplateDisabledIngestRequest toDisabled(TemplateAuditIngestRequest req) {
+        TemplateDisabledIngestRequest dto = new TemplateDisabledIngestRequest();
+        copyBase(req, dto);
+        dto.setFromStatus(req.getFromStatus());
+        dto.setToStatus(req.getToStatus());
+        return dto;
+    }
+
+    public TemplateCategoryChangedIngestRequest toCategoryChanged(TemplateAuditIngestRequest req) {
+        TemplateCategoryChangedIngestRequest dto = new TemplateCategoryChangedIngestRequest();
+        copyBase(req, dto);
+        dto.setPreviousCategory(req.getPreviousCategory());
+        dto.setNewCategory(req.getNewCategory());
+        return dto;
+    }
+
+    // ── Flat → Typed DTO (sync) ───────────────────────────────────────────────
+
+    public TemplateSyncStartedIngestRequest toSyncStarted(TemplateSyncAuditIngestRequest req) {
+        TemplateSyncStartedIngestRequest dto = new TemplateSyncStartedIngestRequest();
+        copySyncBase(req, dto);
+        return dto;
+    }
+
+    public TemplateSyncCompletedIngestRequest toSyncCompleted(TemplateSyncAuditIngestRequest req) {
+        TemplateSyncCompletedIngestRequest dto = new TemplateSyncCompletedIngestRequest();
+        copySyncBase(req, dto);
+        dto.setInsertedCount(req.getInsertedCount());
+        dto.setUpdatedCount(req.getUpdatedCount());
+        dto.setDeletedCount(req.getDeletedCount());
+        dto.setSkippedCount(req.getSkippedCount());
+        dto.setDurationMs(req.getDurationMs());
+        return dto;
+    }
+
+    public TemplateSyncFailedIngestRequest toSyncFailed(TemplateSyncAuditIngestRequest req) {
+        TemplateSyncFailedIngestRequest dto = new TemplateSyncFailedIngestRequest();
+        copySyncBase(req, dto);
+        dto.setFailureReason(req.getFailureReason());
+        return dto;
+    }
+
+    // ── Base copy helpers ─────────────────────────────────────────────────────
+
+    private void copyBase(
+            TemplateAuditIngestRequest src,
+            BaseTemplateAuditIngestRequest dst) {
+        dst.setEventId(src.getEventId());
+        dst.setOrgId(src.getOrgId());
+        dst.setProjectId(src.getProjectId());
+        dst.setWabaId(src.getWabaId());
+        dst.setTemplateId(src.getTemplateId());
+        dst.setActorType(src.getActorType());
+        dst.setActorId(src.getActorId());
+        dst.setOccurredAt(src.getOccurredAt());
+    }
+
+    private void copySyncBase(
+            TemplateSyncAuditIngestRequest src,
+            BaseTemplateSyncAuditIngestRequest dst) {
+        dst.setEventId(src.getEventId());
+        dst.setOrgId(src.getOrgId());
+        dst.setProjectId(src.getProjectId());
+        dst.setWabaId(src.getWabaId());
+        dst.setActorType(src.getActorType());
+        dst.setActorId(src.getActorId());
+        dst.setOccurredAt(src.getOccurredAt());
     }
 }
