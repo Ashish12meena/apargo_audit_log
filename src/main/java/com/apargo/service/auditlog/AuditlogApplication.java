@@ -2,7 +2,8 @@ package com.apargo.service.auditlog;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.kafka.autoconfigure.KafkaAutoConfiguration;
+import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
+
 
 @SpringBootApplication(exclude = KafkaAutoConfiguration.class)
 public class AuditlogApplication {

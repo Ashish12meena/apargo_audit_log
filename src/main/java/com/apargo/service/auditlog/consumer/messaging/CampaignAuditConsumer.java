@@ -2,9 +2,10 @@ package com.apargo.service.auditlog.consumer.messaging;
 
 import com.apargo.service.auditlog.dto.request.ingest.messaging.campaign.*;
 import com.apargo.service.auditlog.service.ingestion.messaging.CampaignAuditIngestionService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import tools.jackson.databind.ObjectMapper;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.context.annotation.Profile;
