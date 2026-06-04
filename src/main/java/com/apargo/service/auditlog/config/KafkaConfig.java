@@ -15,10 +15,10 @@ import org.springframework.kafka.annotation.EnableKafka;
 @EnableConfigurationProperties(KafkaProperties.class)
 public class KafkaConfig {
 
-    @Bean
-    public ObjectMapper objectMapper() {
-        return JsonMapper.builder()
-                .findAndAddModules()
-                .build();
-    }
+    // @Bean
+    // public ObjectMapper objectMapper() {
+    //     return JsonMapper.builder()
+    //             .findAndAddModules()
+    //             .build();
+    // }
 }
