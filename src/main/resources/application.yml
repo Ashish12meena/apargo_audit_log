@@ -5,24 +5,39 @@ spring:
   profiles:
     include:
       - dev
-      # - kafka
+      - kafka
 
-  mongodb:
-    uri: mongodb+srv://root:ashishmongo123@cluster0.sw3tj.mongodb.net/audit
+  data:
+    mongodb:
+      uri: mongodb+srv://root:ashishmongo123@cluster0.sw3tj.mongodb.net/audit
+      database: audit
 
-  kafka:
-    bootstrap-servers: localhost:9092
-    consumer:
-      group-id: auditlog-consumer
-      auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-    listener:
-      ack-mode: MANUAL
 
-messaging:
-  audit:
-    topics:
-      campaign: whatsapp.campaign.audit.events
-      conversation: whatsapp.conversation.audit.events
-      dispatch: whatsapp.dispatch.audit.events
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: when-authorized
+
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://146.88.24.113:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+
+  instance:
+    prefer-ip-address: true

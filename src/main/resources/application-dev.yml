@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: auditlog
+
+  data:
+    mongodb:
+      uri: mongodb+srv://root:ashishmongo123@cluster0.sw3tj.mongodb.net/audit
+      database: audit

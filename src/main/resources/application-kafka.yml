@@ -1,0 +1,34 @@
+spring: 
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: auditlog-consumer
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    listener:
+      ack-mode: MANUAL
+
+
+
+messaging:
+  audit:
+    topics:
+      campaign: whatsapp.campaign.audit.events
+      conversation: whatsapp.conversation.audit.events
+      dispatch: whatsapp.dispatch.audit.events
+
+
+audit:
+  kafka:
+    enabled: false
+    topic: audit.events
+    topic-partitions: 6
+    topic-replicas: 1
+    
+  dispatch:
+    batch-size: 100
+    batch-delay-ms: 100
+    stale-lock-timeout-seconds: 300
+    stale-lock-check-interval-ms: 120000
+    recovery-interval-ms: 30000
