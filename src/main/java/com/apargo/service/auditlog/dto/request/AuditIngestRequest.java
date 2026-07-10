@@ -44,8 +44,6 @@ public class AuditIngestRequest {
 
     private Long projectId; // nullable
 
-    private String wabaId; // nullable
-
     @NotNull
     private AuditActorType actorType;
 
