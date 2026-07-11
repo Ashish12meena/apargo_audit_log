@@ -135,7 +135,7 @@ public class AuditLogStatsRepositoryImpl implements AuditLogStatsRepository {
     private AuditStatsBucket toBucket(Document doc, List<String> groupByFields, String bucket) {
         Document id = doc.get("_id", Document.class);
 
-        Map<String, String> dimensions = new LinkedHashMap<>();
+        Map<String, String> dimensions = new LinkedHashMap<>(); 
         for (String field : groupByFields) {
             Object value = id.get(field);
             dimensions.put(field, value != null ? value.toString() : null);
