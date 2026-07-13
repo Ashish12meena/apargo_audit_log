@@ -3,6 +3,8 @@ package com.apargo.service.auditlog.controller.v1;
 import com.apargo.service.auditlog.dto.request.AuditStatsRequest;
 import com.apargo.service.auditlog.dto.response.AuditStatsResponse;
 import com.apargo.service.auditlog.service.query.AuditStatsService;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,7 +33,7 @@ public class AuditStatsController {
     private final AuditStatsService statsService;
 
     @GetMapping
-    public AuditStatsResponse getStats(AuditStatsRequest request) {
+    public AuditStatsResponse getStats(@Valid AuditStatsRequest request) {
         log.info("audit_stats_requested orgId={} projectId={} groupBy={} bucket={}",
                 request.getOrganizationId(), request.getProjectId(), request.getGroupBy(), request.getBucket());
         return statsService.getStats(request);

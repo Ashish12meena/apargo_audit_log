@@ -4,6 +4,8 @@ import lombok.Data;
 
 import java.time.Instant;
 
+import jakarta.validation.constraints.NotNull;
+
 /**
  * Backing object for GET /api/v1/audit-logs/stats, populated via
  * {@code @ModelAttribute} — same binding style as {@link AuditSearchRequest}.
@@ -23,6 +25,7 @@ import java.time.Instant;
 @Data
 public class AuditStatsRequest {
 
+    @NotNull(message = "organizationId is required for stats queries")
     private Long organizationId;
     private Long projectId;
 
