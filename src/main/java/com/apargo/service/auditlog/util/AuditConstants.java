@@ -26,6 +26,7 @@ public final class AuditConstants {
     public static final String FIELD_OCCURRED_AT = "occurredAt";
     public static final String FIELD_RECORDED_AT = "recordedAt";
     public static final String FIELD_ERROR_MESSAGE = "errorMessage";
+    public static final String FIELD_DEVICE = "device";
 
     /** Synthetic field, computed at aggregation time only — never stored on AuditLog. */
     public static final String FIELD_BUCKET_DATE = "bucketDate";
@@ -59,7 +60,7 @@ public final class AuditConstants {
      * into a full-collection dump with extra steps. See AuditStatsService.
      */
     public static final Set<String> GROUPABLE_FIELDS = Set.of(
-            FIELD_MODULE, FIELD_EVENT_TYPE, FIELD_EVENT_STATUS, FIELD_ACTOR_TYPE, FIELD_PROJECT_ID
+            FIELD_MODULE, FIELD_EVENT_TYPE, FIELD_EVENT_STATUS, FIELD_ACTOR_TYPE,FIELD_DEVICE, FIELD_PROJECT_ID
     );
 
     /** Two dimensions covers every real dashboard need we've identified so far. */

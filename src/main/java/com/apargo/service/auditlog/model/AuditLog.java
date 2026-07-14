@@ -5,6 +5,7 @@ package com.apargo.service.auditlog.model;
 import com.apargo.service.auditlog.enums.AuditActorType;
 import com.apargo.service.auditlog.enums.AuditEventStatus;
 import com.apargo.service.auditlog.enums.AuditEventType;
+import com.apargo.service.auditlog.enums.Device;
 import com.apargo.service.auditlog.enums.Module;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -89,6 +90,8 @@ public class AuditLog {
 
     private AuditEventStatus eventStatus;
 
+    
+
     // ── Who / Where ──────────────────────────────────────────────────────────
 
     private Long orgId;
@@ -102,6 +105,8 @@ public class AuditLog {
     private String ipAddress; // nullable
 
     private String userAgent; // nullable
+
+    private Device device;
 
     // ── What ─────────────────────────────────────────────────────────────────
 

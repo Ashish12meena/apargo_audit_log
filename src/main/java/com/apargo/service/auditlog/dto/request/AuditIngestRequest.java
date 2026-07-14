@@ -3,6 +3,7 @@ package com.apargo.service.auditlog.dto.request;
 import com.apargo.service.auditlog.enums.AuditActorType;
 import com.apargo.service.auditlog.enums.AuditEventStatus;
 import com.apargo.service.auditlog.enums.AuditEventType;
+import com.apargo.service.auditlog.enums.Device;
 import com.apargo.service.auditlog.enums.Module;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -58,6 +59,7 @@ public class AuditIngestRequest {
     private String traceId; // nullable
     private String ipAddress; // nullable
     private String userAgent; // nullable
+    private Device device;
 
     private Map<String, Object> oldValue; // nullable
     private Map<String, Object> newValue; // nullable

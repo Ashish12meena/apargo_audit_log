@@ -2,6 +2,7 @@ package com.apargo.service.auditlog.dto.request;
 
 import com.apargo.service.auditlog.enums.AuditEventStatus;
 import com.apargo.service.auditlog.enums.AuditEventType;
+import com.apargo.service.auditlog.enums.Device;
 import com.apargo.service.auditlog.enums.Module;
 import lombok.Data;
 
@@ -28,6 +29,7 @@ public class AuditSearchRequest {
     private String entityType;
     private String entityId;
     private AuditEventStatus status; // -> eventStatus
+    private Device device;
 
     private Instant fromDate;
     private Instant toDate;

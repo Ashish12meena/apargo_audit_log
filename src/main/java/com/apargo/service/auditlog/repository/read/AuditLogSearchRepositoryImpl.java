@@ -38,6 +38,10 @@ public class AuditLogSearchRepositoryImpl implements AuditLogSearchRepository {
         if (f.getProjectId() != null) {
             criteriaList.add(Criteria.where(AuditConstants.FIELD_PROJECT_ID).is(f.getProjectId()));
         }
+
+        if (f.getDevice() != null) {
+            criteriaList.add(Criteria.where(AuditConstants.FIELD_DEVICE).is(f.getDevice()));
+        }
         if (f.getUserId() != null) {
             criteriaList.add(Criteria.where(AuditConstants.FIELD_ACTOR_ID).is(f.getUserId()));
         }
