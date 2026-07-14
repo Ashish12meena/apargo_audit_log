@@ -75,7 +75,7 @@ public class AuditLogSearchRepositoryImpl implements AuditLogSearchRepository {
             criteriaList.add(new Criteria().orOperator(
                     Criteria.where(AuditConstants.FIELD_ENTITY_TYPE).regex(regex, "i"),
                     Criteria.where(AuditConstants.FIELD_ERROR_MESSAGE).regex(regex, "i")
-            ));
+            )); 
         }
 
         Query query = new Query();

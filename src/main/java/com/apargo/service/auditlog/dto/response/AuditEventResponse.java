@@ -24,7 +24,6 @@ public class AuditEventResponse {
 
     private Long orgId;
     private Long projectId;
-    private String wabaId;
 
     private AuditActorType actorType;
     private Long actorId;
