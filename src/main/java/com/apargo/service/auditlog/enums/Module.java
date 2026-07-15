@@ -5,10 +5,9 @@ package com.apargo.service.auditlog.enums;
  * Used to partition eventType constants and as a primary query filter.
  */
 public enum Module {
+    ORGANIZATION,
     TEMPLATE,
-    MESSAGING_CAMPAIGN,
-    MESSAGING_DISPATCH,
-    MESSAGING_CONVERSATION,
+    MESSAGING,
     STORAGE,
     WALLET,
     USERS,

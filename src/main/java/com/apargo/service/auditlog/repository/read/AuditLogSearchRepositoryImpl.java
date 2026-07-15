@@ -71,11 +71,11 @@ public class AuditLogSearchRepositoryImpl implements AuditLogSearchRepository {
             // fields. Keep this narrow — it's not a full-text index, just a
             // regex OR, so it should never be the only filter on a large
             // date range in production.
-            String regex = ".*" + Pattern.quote(f.getSearch()) + ".*";
+            String regex = "\\b" + Pattern.quote(f.getSearch().trim()) + "\\b";
             criteriaList.add(new Criteria().orOperator(
                     Criteria.where(AuditConstants.FIELD_ENTITY_TYPE).regex(regex, "i"),
                     Criteria.where(AuditConstants.FIELD_ERROR_MESSAGE).regex(regex, "i")
-            )); 
+            ));   
         }
 
         Query query = new Query();
