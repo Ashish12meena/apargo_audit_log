@@ -4,6 +4,8 @@ import com.apargo.service.auditlog.enums.AuditEventStatus;
 import com.apargo.service.auditlog.enums.AuditEventType;
 import com.apargo.service.auditlog.enums.Device;
 import com.apargo.service.auditlog.enums.Module;
+
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.Instant;
@@ -20,7 +22,9 @@ public class AuditSearchRequest {
 
     private String search; // nullable, free-text over entityType/errorMessage
 
-    private Long organizationId; // -> orgId
+    @NotNull(message = "organizationId is required")
+    private Long organizationId;
+
     private Long projectId;
     private Long userId; // -> actorId
 

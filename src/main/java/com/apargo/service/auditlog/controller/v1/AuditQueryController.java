@@ -4,6 +4,8 @@ import com.apargo.service.auditlog.dto.request.AuditSearchRequest;
 import com.apargo.service.auditlog.dto.response.AuditEventResponse;
 import com.apargo.service.auditlog.dto.response.PagedResponse;
 import com.apargo.service.auditlog.service.query.AuditQueryService;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,7 +30,7 @@ public class AuditQueryController {
     private final AuditQueryService queryService;
 
     @GetMapping
-    public PagedResponse<AuditEventResponse> search(AuditSearchRequest filters) {
+    public PagedResponse<AuditEventResponse> search(@Valid AuditSearchRequest filters) {
         return queryService.search(filters);
     }
 
