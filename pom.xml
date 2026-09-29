@@ -12,8 +12,8 @@
     </parent>
 
     <groupId>com.apargo.services</groupId>
-    <artifactId>audit-service</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <artifactId>auditlog</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
     <name>audit-service</name>
     <description>Centralized audit and access log service: Kafka ingestion into MongoDB, read APIs, retention</description>
 
