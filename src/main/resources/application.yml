@@ -1,44 +1,175 @@
+# Base configuration. Every value is ${ENV_VAR:default}, so the service starts with no environment
+# variables set. The audit.* defaults equal AuditDefaults.java (AuditPropertiesDefaultsTest checks it);
+# AuditProperties falls back to the same values if a key is removed from this file.
+# Profile files: application-dev.yml (local), application-prod.yml (staging/production).
+
 spring:
   application:
-    name: auditlog
+    name: ${SPRING_APPLICATION_NAME:audit-service}
+  lifecycle:
+    timeout-per-shutdown-phase: ${SHUTDOWN_TIMEOUT:30s}
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+    time-zone: UTC
 
-  profiles:
-    include:
-      - dev
-      - kafka
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:146.88.24.113:9092}
+    client-id: ${KAFKA_CLIENT_ID:${spring.application.name:audit-service}}
+    consumer:
+      # Offsets are committed by the container only after a batch is stored or dead-lettered.
+      enable-auto-commit: false
+      auto-offset-reset: earliest
+      isolation-level: read_committed
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      # Raw bytes: poison messages reach the DLQ exactly as they were received.
+      value-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+      # Batching: count trigger / size trigger / time trigger.
+      max-poll-records: ${AUDIT_BATCH_MAX_RECORDS:500}
+      fetch-min-size: ${AUDIT_BATCH_MIN_BYTES:262144}
+      fetch-max-wait: ${AUDIT_BATCH_MAX_WAIT:500ms}
+      properties:
+        partition.assignment.strategy: org.apache.kafka.clients.consumer.CooperativeStickyAssignor
+        max.partition.fetch.bytes: ${KAFKA_MAX_PARTITION_FETCH_BYTES:1048576}
+        fetch.max.bytes: ${KAFKA_FETCH_MAX_BYTES:8388608}
+        max.poll.interval.ms: ${KAFKA_MAX_POLL_INTERVAL_MS:300000}
+    producer:
+      # Used only to publish dead letters.
+      acks: all
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.ByteArraySerializer
+      properties:
+        enable.idempotence: true
+        delivery.timeout.ms: ${KAFKA_DELIVERY_TIMEOUT_MS:30000}
+        max.block.ms: ${KAFKA_MAX_BLOCK_MS:10000}
+    listener:
+      type: batch
+      ack-mode: batch
+      missing-topics-fatal: false
+      observation-enabled: false
 
-  data:
-    mongodb:
-      uri: mongodb+srv://root:ashishmongo123@cluster0.sw3tj.mongodb.net/audit
-      database: audit
+server:
+  port: ${SERVER_PORT:8070}
+  shutdown: graceful
+  error:
+    whitelabel:
+      enabled: false
+  tomcat:
+    max-threads: ${SERVER_MAX_THREADS:100}
 
-
-
-springdoc:
-  swagger-ui:
-    path: /swagger-ui.html
-    
-  api-docs:
-    path: /v3/api-docs
+audit:
+  environment: ${AUDIT_ENVIRONMENT:development}
+  roles:
+    consumer: ${AUDIT_ROLE_CONSUMER:true}
+    api: ${AUDIT_ROLE_API:true}
+    archiver: ${AUDIT_ROLE_ARCHIVER:false}
+  topics:
+    # Same property keys as com.apargo.platform.contract.event.EventTopics.
+    audit: ${AUDIT_TOPIC:platform.audit.events}
+    access: ${ACCESS_TOPIC:platform.access.events}
+    dlq-suffix: ${DLQ_SUFFIX:.dlq}
+  consumer:
+    audit:
+      group-id: ${AUDIT_CONSUMER_GROUP:audit-service.audit}
+      concurrency: ${AUDIT_CONSUMER_CONCURRENCY:3}
+    access:
+      group-id: ${ACCESS_CONSUMER_GROUP:audit-service.access}
+      concurrency: ${ACCESS_CONSUMER_CONCURRENCY:2}
+    max-event-bytes: ${AUDIT_MAX_EVENT_BYTES:65536}
+    supported-schema-versions: ${AUDIT_SUPPORTED_SCHEMA_VERSIONS:1}
+    max-future-skew: ${AUDIT_MAX_FUTURE_SKEW:24h}
+    retry:
+      initial-interval: ${AUDIT_RETRY_INITIAL:1s}
+      multiplier: ${AUDIT_RETRY_MULTIPLIER:2.0}
+      max-interval: ${AUDIT_RETRY_MAX:60s}
+    circuit-breaker:
+      failure-threshold: ${AUDIT_CB_FAILURE_THRESHOLD:5}
+      open-duration: ${AUDIT_CB_OPEN_DURATION:10s}
+    dead-letter-send-timeout: ${AUDIT_DLQ_SEND_TIMEOUT:15s}
+  mongo:
+    write-uri: ${AUDIT_MONGO_WRITE_URI:mongodb://localhost:27017/?replicaSet=rs0}
+    # Defaults to the write URI when no separate read-only user is configured.
+    read-uri: ${AUDIT_MONGO_READ_URI:${AUDIT_MONGO_WRITE_URI:mongodb://localhost:27017/?replicaSet=rs0}}
+    database: ${AUDIT_MONGO_DATABASE:audit}
+    write-timeout: ${AUDIT_MONGO_WRITE_TIMEOUT:10s}
+    query-max-time: ${AUDIT_MONGO_QUERY_MAX_TIME:3s}
+    max-staleness: ${AUDIT_MONGO_MAX_STALENESS:90s}
+    write-pool-size: ${AUDIT_MONGO_WRITE_POOL_SIZE:20}
+    read-pool-size: ${AUDIT_MONGO_READ_POOL_SIZE:30}
+    manage-schema: ${AUDIT_MONGO_MANAGE_SCHEMA:true}
+    block-compressor: ${AUDIT_MONGO_BLOCK_COMPRESSOR:zstd}
+  retention:
+    audit-hot-days: ${AUDIT_HOT_DAYS:30}
+    access-hot-days: ${ACCESS_HOT_DAYS:30}
+  query:
+    default-range: ${AUDIT_QUERY_DEFAULT_RANGE:7d}
+    max-range: ${AUDIT_QUERY_MAX_RANGE:31d}
+    default-page-size: ${AUDIT_QUERY_DEFAULT_PAGE_SIZE:20}
+    max-page-size: ${AUDIT_QUERY_MAX_PAGE_SIZE:100}
+    max-stats-buckets: ${AUDIT_MAX_STATS_BUCKETS:1000}
+  archiver:
+    cron: ${AUDIT_ARCHIVER_CRON:0 15 * * * *}
+    batch-size: ${AUDIT_ARCHIVER_BATCH_SIZE:5000}
+    delete-chunk-size: ${AUDIT_ARCHIVER_DELETE_CHUNK:1000}
+    delete-pause: ${AUDIT_ARCHIVER_DELETE_PAUSE:200ms}
+    max-run: ${AUDIT_ARCHIVER_MAX_RUN:45m}
+    store:
+      type: ${AUDIT_ARCHIVE_STORE:NONE}
+      local-dir: ${AUDIT_ARCHIVE_LOCAL_DIR:./archive}
+  security:
+    # Override in every shared environment; startup warns outside development while the default is used.
+    internal-api-key: ${AUDIT_INTERNAL_API_KEY:apargo-audit-internal-key}
+    # Comma-separated caller names; * = any caller that has the key.
+    allowed-callers: ${AUDIT_INTERNAL_ALLOWED_CALLERS:*}
+    # Comma-separated browser origins; * = all origins.
+    cors-allowed-origins: ${AUDIT_CORS_ALLOWED_ORIGINS:*}
 
 management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,prometheus
   endpoint:
     health:
       probes:
         enabled: true
-      show-details: when-authorized
+      show-details: ${MANAGEMENT_HEALTH_DETAILS:never}
+      group:
+        readiness:
+          include: readinessState,auditMongo
+  info:
+    env:
+      enabled: false
+  observations:
+    key-values:
+      application: ${spring.application.name:audit-service}
 
+springdoc:
+  api-docs:
+    enabled: ${API_DOCS_ENABLED:true}
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: ${API_DOCS_ENABLED:true}
+    path: /swagger-ui.html
+  paths-to-match: /api/**, /internal/**
 
 eureka:
   client:
-    service-url:
-      defaultZone: http://146.88.24.113:8761/eureka/
+    enabled: ${EUREKA_ENABLED:true}
     register-with-eureka: true
     fetch-registry: true
-
+    service-url:
+      defaultZone: ${EUREKA_URL:http://146.88.24.113:8761/eureka/}
   instance:
     prefer-ip-address: true
+
+logging:
+  pattern:
+    correlation: "[req=%X{requestId:-} trace=%X{traceId:-} org=%X{orgId:-}] "
+  level:
+    root: INFO
+    com.apargo: ${AUDIT_LOG_LEVEL:INFO}
+    org.apache.kafka: WARN
+    org.mongodb.driver: WARN

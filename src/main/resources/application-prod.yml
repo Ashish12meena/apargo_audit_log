@@ -1,0 +1,30 @@
+# Staging / production. Every value has a default so the service always starts; set the real
+# MongoDB URI and internal API key through the environment (see .env.example). Startup logs an
+# audit_config_warning for each value still on its default. Staging sets AUDIT_ENVIRONMENT=staging.
+spring:
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:146.88.24.113:9092}
+
+audit:
+  environment: ${AUDIT_ENVIRONMENT:production}
+  mongo:
+    write-uri: ${AUDIT_MONGO_WRITE_URI:mongodb://localhost:27017/?replicaSet=rs0}
+    read-uri: ${AUDIT_MONGO_READ_URI:${AUDIT_MONGO_WRITE_URI:mongodb://localhost:27017/?replicaSet=rs0}}
+  security:
+    internal-api-key: ${AUDIT_INTERNAL_API_KEY:apargo-audit-internal-key}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://146.88.24.113:8761/eureka/}
+
+springdoc:
+  api-docs:
+    enabled: ${API_DOCS_ENABLED:false}
+  swagger-ui:
+    enabled: ${API_DOCS_ENABLED:false}
+
+logging:
+  structured:
+    format:
+      console: ${LOG_FORMAT:ecs}

@@ -1,0 +1,54 @@
+{
+  "collection": "access_logs",
+  "validationLevel": "strict",
+  "validationAction": "error",
+  "validator": {
+    "$jsonSchema": {
+      "bsonType": "object",
+      "required": ["_id", "schemaVersion", "sourceService", "eventType", "status", "actor",
+                   "occurredAt", "recordedAt", "archiveAt"],
+      "properties": {
+        "_id": { "bsonType": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" },
+        "schemaVersion": { "bsonType": ["int", "long"], "minimum": 1 },
+        "sourceService": { "bsonType": "string", "minLength": 1, "maxLength": 100 },
+        "eventType": { "bsonType": "string", "pattern": "^[A-Z][A-Z0-9]*(_[A-Z0-9]+)+$" },
+        "status": { "bsonType": "string", "pattern": "^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$" },
+        "orgId": { "bsonType": ["long", "int"], "minimum": 0 },
+        "actor": {
+          "bsonType": "object",
+          "required": ["type"],
+          "properties": {
+            "type": { "bsonType": "string" },
+            "id": { "bsonType": "string" },
+            "name": { "bsonType": "string" },
+            "email": { "bsonType": "string" },
+            "impersonatorId": { "bsonType": "string" }
+          }
+        },
+        "authMethod": { "bsonType": "string" },
+        "failureCode": { "bsonType": "string" },
+        "resource": { "bsonType": "string" },
+        "ip": { "bsonType": "string" },
+        "userAgent": { "bsonType": "string" },
+        "country": { "bsonType": "string" },
+        "metadata": { "bsonType": "object" },
+        "requestId": { "bsonType": "string" },
+        "traceId": { "bsonType": "string" },
+        "occurredAt": { "bsonType": "date" },
+        "recordedAt": { "bsonType": "date" },
+        "archiveAt": { "bsonType": "date" }
+      }
+    }
+  },
+  "indexes": [
+    { "name": "org_time", "key": { "orgId": 1, "occurredAt": -1, "_id": -1 } },
+    { "name": "actor_time", "key": { "actor.id": 1, "occurredAt": -1, "_id": -1 },
+      "partialFilterExpression": { "actor.id": { "$exists": true } } },
+    { "name": "org_type_time", "key": { "orgId": 1, "eventType": 1, "occurredAt": -1, "_id": -1 } },
+    { "name": "actor_email_status_time", "key": { "actor.email": 1, "status": 1, "occurredAt": -1 },
+      "partialFilterExpression": { "actor.email": { "$exists": true } } },
+    { "name": "trace", "key": { "traceId": 1 },
+      "partialFilterExpression": { "traceId": { "$exists": true } } },
+    { "name": "archive_scan", "key": { "archiveAt": 1, "_id": 1 } }
+  ]
+}

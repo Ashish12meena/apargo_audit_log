@@ -1,11 +1,19 @@
-server:
-  port: 8070
+# Local development: MongoDB single-node replica set on localhost, readable logs, debug logging.
+# Kafka and Eureka use the shared defaults from application.yml (146.88.24.113).
+audit:
+  environment: ${AUDIT_ENVIRONMENT:development}
+  archiver:
+    store:
+      type: ${AUDIT_ARCHIVE_STORE:LOCAL}
+      local-dir: ${AUDIT_ARCHIVE_LOCAL_DIR:./build/archive}
+  security:
+    internal-api-key: ${AUDIT_INTERNAL_API_KEY:dev-internal-key}
 
-spring:
-  application:
-    name: auditlog
+management:
+  endpoint:
+    health:
+      show-details: ${MANAGEMENT_HEALTH_DETAILS:always}
 
-  data:
-    mongodb:
-      uri: mongodb+srv://root:ashishmongo123@cluster0.sw3tj.mongodb.net/audit
-      database: audit
+logging:
+  level:
+    com.apargo: ${AUDIT_LOG_LEVEL:DEBUG}

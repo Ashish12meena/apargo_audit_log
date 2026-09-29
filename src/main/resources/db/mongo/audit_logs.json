@@ -1,0 +1,52 @@
+{
+  "collection": "audit_logs",
+  "validationLevel": "strict",
+  "validationAction": "error",
+  "validator": {
+    "$jsonSchema": {
+      "bsonType": "object",
+      "required": ["_id", "schemaVersion", "sourceService", "module", "eventType", "status", "orgId",
+                   "actor", "changes", "metadata", "occurredAt", "recordedAt", "archiveAt"],
+      "properties": {
+        "_id": { "bsonType": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" },
+        "schemaVersion": { "bsonType": ["int", "long"], "minimum": 1 },
+        "sourceService": { "bsonType": "string", "minLength": 1, "maxLength": 100 },
+        "module": { "bsonType": "string", "pattern": "^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$" },
+        "eventType": { "bsonType": "string", "pattern": "^[A-Z][A-Z0-9]*(_[A-Z0-9]+)+$" },
+        "status": { "enum": ["SUCCESS", "FAILURE"] },
+        "orgId": { "bsonType": ["long", "int"], "minimum": 0 },
+        "projectId": { "bsonType": ["long", "int"], "minimum": 0 },
+        "actor": {
+          "bsonType": "object",
+          "required": ["type"],
+          "properties": { "type": { "bsonType": "string" } }
+        },
+        "entity": { "bsonType": "object", "required": ["type"] },
+        "changes": { "bsonType": "array", "maxItems": 100, "items": { "bsonType": "object" } },
+        "metadata": { "bsonType": "object" },
+        "error": { "bsonType": "object" },
+        "channel": { "bsonType": "string" },
+        "requestId": { "bsonType": "string" },
+        "traceId": { "bsonType": "string" },
+        "ip": { "bsonType": "string" },
+        "userAgent": { "bsonType": "string" },
+        "occurredAt": { "bsonType": "date" },
+        "recordedAt": { "bsonType": "date" },
+        "archiveAt": { "bsonType": "date" }
+      }
+    }
+  },
+  "indexes": [
+    { "name": "org_time", "key": { "orgId": 1, "occurredAt": -1, "_id": -1 } },
+    { "name": "org_project_time", "key": { "orgId": 1, "projectId": 1, "occurredAt": -1, "_id": -1 },
+      "partialFilterExpression": { "projectId": { "$exists": true } } },
+    { "name": "org_entity_time", "key": { "orgId": 1, "entity.type": 1, "entity.id": 1, "occurredAt": -1, "_id": -1 },
+      "partialFilterExpression": { "entity.id": { "$exists": true } } },
+    { "name": "org_actor_time", "key": { "orgId": 1, "actor.id": 1, "occurredAt": -1, "_id": -1 } },
+    { "name": "org_module_time", "key": { "orgId": 1, "module": 1, "occurredAt": -1, "_id": -1 } },
+    { "name": "org_failures_time", "key": { "orgId": 1, "status": 1, "occurredAt": -1, "_id": -1 },
+      "partialFilterExpression": { "status": "FAILURE" } },
+    { "name": "trace", "key": { "traceId": 1 } },
+    { "name": "archive_scan", "key": { "archiveAt": 1, "_id": 1 } }
+  ]
+}

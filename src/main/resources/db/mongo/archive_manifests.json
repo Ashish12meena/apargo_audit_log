@@ -1,0 +1,33 @@
+{
+  "collection": "archive_manifests",
+  "validationLevel": "strict",
+  "validationAction": "error",
+  "validator": {
+    "$jsonSchema": {
+      "bsonType": "object",
+      "required": ["_id", "collection", "runId", "dt", "objectKey", "docCount", "status", "exportedAt"],
+      "properties": {
+        "_id": { "bsonType": "string" },
+        "collection": { "bsonType": "string" },
+        "runId": { "bsonType": "string" },
+        "dt": { "bsonType": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+        "objectKey": { "bsonType": "string" },
+        "docCount": { "bsonType": ["int", "long"], "minimum": 0 },
+        "bytes": { "bsonType": ["int", "long"], "minimum": 0 },
+        "sha256": { "bsonType": "string" },
+        "firstId": { "bsonType": "string" },
+        "lastId": { "bsonType": "string" },
+        "minOccurredAt": { "bsonType": "date" },
+        "maxOccurredAt": { "bsonType": "date" },
+        "status": { "enum": ["EXPORTED", "DELETED", "FAILED"] },
+        "exportedAt": { "bsonType": "date" },
+        "deletedAt": { "bsonType": "date" },
+        "error": { "bsonType": "string" }
+      }
+    }
+  },
+  "indexes": [
+    { "name": "collection_dt", "key": { "collection": 1, "dt": 1 } },
+    { "name": "status_exported", "key": { "status": 1, "exportedAt": 1 } }
+  ]
+}
