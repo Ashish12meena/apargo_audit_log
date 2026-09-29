@@ -23,6 +23,8 @@ import com.apargo.services.audit.common.constant.ApiHeaders;
 @Configuration(proxyBeanMethods = false)
 public class WebConfig implements WebMvcConfigurer {
 
+    // Bean names are prefixed: Spring Boot already registers a bean called "requestContextFilter".
+
     private static final long CORS_MAX_AGE_SECONDS = 3600;
 
     private final AuditProperties properties;
@@ -32,7 +34,7 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public FilterRegistrationBean<RequestContextFilter> requestContextFilter() {
+    public FilterRegistrationBean<RequestContextFilter> auditRequestContextFilter() {
         FilterRegistrationBean<RequestContextFilter> registration = new FilterRegistrationBean<>(new RequestContextFilter());
         registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
         registration.addUrlPatterns("/*");
@@ -40,7 +42,7 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public FilterRegistrationBean<InternalApiKeyFilter> internalApiKeyFilter(ErrorResponseWriter errorWriter) {
+    public FilterRegistrationBean<InternalApiKeyFilter> auditInternalApiKeyFilter(ErrorResponseWriter errorWriter) {
         AuditProperties.Security security = properties.security();
         FilterRegistrationBean<InternalApiKeyFilter> registration = new FilterRegistrationBean<>(
                 new InternalApiKeyFilter(security.internalApiKey(), security.allowedCallers(),

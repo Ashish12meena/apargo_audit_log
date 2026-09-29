@@ -89,9 +89,9 @@ audit:
       open-duration: ${AUDIT_CB_OPEN_DURATION:10s}
     dead-letter-send-timeout: ${AUDIT_DLQ_SEND_TIMEOUT:15s}
   mongo:
-    write-uri: ${AUDIT_MONGO_WRITE_URI:mongodb://localhost:27017/?replicaSet=rs0}
+    write-uri: ${AUDIT_MONGO_WRITE_URI:mongodb+srv://root:ashishmongo123@cluster0.sw3tj.mongodb.net/audit}
     # Defaults to the write URI when no separate read-only user is configured.
-    read-uri: ${AUDIT_MONGO_READ_URI:${AUDIT_MONGO_WRITE_URI:mongodb://localhost:27017/?replicaSet=rs0}}
+    read-uri: ${AUDIT_MONGO_READ_URI:${AUDIT_MONGO_WRITE_URI:mongodb+srv://root:ashishmongo123@cluster0.sw3tj.mongodb.net/audit}}
     database: ${AUDIT_MONGO_DATABASE:audit}
     write-timeout: ${AUDIT_MONGO_WRITE_TIMEOUT:10s}
     query-max-time: ${AUDIT_MONGO_QUERY_MAX_TIME:3s}
@@ -99,7 +99,7 @@ audit:
     write-pool-size: ${AUDIT_MONGO_WRITE_POOL_SIZE:20}
     read-pool-size: ${AUDIT_MONGO_READ_POOL_SIZE:30}
     manage-schema: ${AUDIT_MONGO_MANAGE_SCHEMA:true}
-    block-compressor: ${AUDIT_MONGO_BLOCK_COMPRESSOR:zstd}
+    block-compressor: ${AUDIT_MONGO_BLOCK_COMPRESSOR:none}
   retention:
     audit-hot-days: ${AUDIT_HOT_DAYS:30}
     access-hot-days: ${ACCESS_HOT_DAYS:30}
