@@ -67,8 +67,8 @@ audit:
     archiver: ${AUDIT_ROLE_ARCHIVER:false}
   topics:
     # Same property keys as com.apargo.platform.contract.event.EventTopics.
-    audit: ${AUDIT_TOPIC:platform.audit.events}
-    access: ${ACCESS_TOPIC:platform.access.events}
+    audit: ${AUDIT_TOPIC:apargo.audit.events}
+    access: ${ACCESS_TOPIC:apargo.access.events}
     dlq-suffix: ${DLQ_SUFFIX:.dlq}
   consumer:
     audit:
