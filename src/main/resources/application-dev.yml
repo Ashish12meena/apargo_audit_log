@@ -1,7 +1,6 @@
 # Local development: MongoDB single-node replica set on localhost, readable logs, debug logging.
-# Kafka and Eureka use the shared defaults from application.yml (146.88.24.113).
+# Kafka and Eureka addresses come from ../platform.env (fallback: application.yml).
 audit:
-  environment: ${AUDIT_ENVIRONMENT:development}
   archiver:
     store:
       type: ${AUDIT_ARCHIVE_STORE:LOCAL}
@@ -16,4 +15,4 @@ management:
 
 logging:
   level:
-    com.apargo: ${AUDIT_LOG_LEVEL:DEBUG}
+    com.apargo: ${LOG_LEVEL_APP:${AUDIT_LOG_LEVEL:DEBUG}}

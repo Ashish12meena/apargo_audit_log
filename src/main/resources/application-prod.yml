@@ -16,13 +16,13 @@ audit:
 eureka:
   client:
     service-url:
-      defaultZone: ${EUREKA_URL:http://146.88.24.113:8761/eureka/}
+      defaultZone: ${EUREKA_DEFAULT_ZONE:${EUREKA_URL:http://146.88.24.113:8761/eureka/}}
 
 springdoc:
   api-docs:
-    enabled: ${API_DOCS_ENABLED:false}
+    enabled: ${SWAGGER_ENABLED:${API_DOCS_ENABLED:false}}
   swagger-ui:
-    enabled: ${API_DOCS_ENABLED:false}
+    enabled: ${SWAGGER_ENABLED:${API_DOCS_ENABLED:false}}
 
 logging:
   structured:

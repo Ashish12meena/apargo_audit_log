@@ -6,6 +6,13 @@
 spring:
   application:
     name: ${SPRING_APPLICATION_NAME:audit-service}
+  # Platform configuration standard (docs/configuration): shared infrastructure addresses come from
+  # ../platform.env, this service's own settings and secrets from ./.env (the later import wins).
+  # Real environment variables override both; every ${VAR:default} below still has its default.
+  config:
+    import:
+      - optional:file:${APARGO_PLATFORM_ENV:../platform.env}[.properties]
+      - optional:file:./.env[.properties]
   lifecycle:
     timeout-per-shutdown-phase: ${SHUTDOWN_TIMEOUT:30s}
   jackson:
@@ -51,13 +58,13 @@ spring:
       observation-enabled: false
 
 server:
-  port: ${SERVER_PORT:8070}
+  port: ${SERVER_PORT:${AUDIT_SERVICE_PORT:8070}}
   shutdown: graceful
   error:
     whitelabel:
       enabled: false
   tomcat:
-    max-threads: ${SERVER_MAX_THREADS:100}
+    max-threads: ${TOMCAT_MAX_THREADS:${SERVER_MAX_THREADS:100}}
 
 audit:
   environment: ${AUDIT_ENVIRONMENT:development}
@@ -124,13 +131,13 @@ audit:
     # Comma-separated caller names; * = any caller that has the key.
     allowed-callers: ${AUDIT_INTERNAL_ALLOWED_CALLERS:*}
     # Comma-separated browser origins; * = all origins.
-    cors-allowed-origins: ${AUDIT_CORS_ALLOWED_ORIGINS:*}
+    cors-allowed-origins: ${AUDIT_CORS_ALLOWED_ORIGINS:${CORS_ALLOWED_ORIGINS:*}}
 
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,prometheus
+        include: ${MANAGEMENT_ENDPOINTS:health,info,prometheus}
   endpoint:
     health:
       probes:
@@ -148,28 +155,29 @@ management:
 
 springdoc:
   api-docs:
-    enabled: ${API_DOCS_ENABLED:true}
+    enabled: ${SWAGGER_ENABLED:${API_DOCS_ENABLED:true}}
     path: /v3/api-docs
   swagger-ui:
-    enabled: ${API_DOCS_ENABLED:true}
+    enabled: ${SWAGGER_ENABLED:${API_DOCS_ENABLED:true}}
     path: /swagger-ui.html
   paths-to-match: /api/**, /internal/**
 
 eureka:
   client:
     enabled: ${EUREKA_ENABLED:true}
-    register-with-eureka: true
-    fetch-registry: true
+    register-with-eureka: ${EUREKA_REGISTER_WITH_EUREKA:true}
+    fetch-registry: ${EUREKA_FETCH_REGISTRY:true}
     service-url:
-      defaultZone: ${EUREKA_URL:http://146.88.24.113:8761/eureka/}
+      # EUREKA_DEFAULT_ZONE is the platform-wide name; EUREKA_URL is still honoured.
+      defaultZone: ${EUREKA_DEFAULT_ZONE:${EUREKA_URL:http://146.88.24.113:8761/eureka/}}
   instance:
-    prefer-ip-address: true
+    prefer-ip-address: ${EUREKA_PREFER_IP_ADDRESS:true}
 
 logging:
   pattern:
     correlation: "[req=%X{requestId:-} trace=%X{traceId:-} org=%X{orgId:-}] "
   level:
-    root: INFO
-    com.apargo: ${AUDIT_LOG_LEVEL:INFO}
-    org.apache.kafka: WARN
-    org.mongodb.driver: WARN
+    root: ${LOG_LEVEL_ROOT:INFO}
+    com.apargo: ${LOG_LEVEL_APP:${AUDIT_LOG_LEVEL:INFO}}
+    org.apache.kafka: ${LOG_LEVEL_KAFKA:WARN}
+    org.mongodb.driver: ${LOG_LEVEL_MONGO:WARN}

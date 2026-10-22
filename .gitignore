@@ -32,6 +32,9 @@ build/
 ### VS Code ###
 .vscode/ 
 
-# Environment / Secrets
+# Environment / Secrets — .env holds real values and is never committed; .env.example is the
+# committed template that lists every variable, so it must stay visible.
 *.env
-.env.example
+.env
+.env.*
+!.env.example

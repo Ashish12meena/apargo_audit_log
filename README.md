@@ -27,7 +27,7 @@ mvn spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
 The `dev` profile uses MongoDB on `localhost`, Kafka and Eureka on `146.88.24.113` (set
-`KAFKA_BOOTSTRAP_SERVERS` / `EUREKA_URL` / `EUREKA_ENABLED=false` to change that), sets the internal
+`KAFKA_BOOTSTRAP_SERVERS` / `EUREKA_DEFAULT_ZONE` / `EUREKA_ENABLED=false` to change that), sets the internal
 API key to `dev-internal-key`, and writes archive files (if the archiver role is on) to `./build/archive`.
 
 Try it:
@@ -47,6 +47,9 @@ mvn clean verify -Pit       # + Testcontainers integration test (Kafka + MongoDB
 ## Configuration
 
 Every setting is an environment variable with a default, so the service starts with nothing set.
+Values are read, highest first, from: real environment variables, `./.env` (this service's own
+settings and secrets), `../platform.env` (shared infrastructure addresses for all services — see the
+platform docs, `docs/configuration/`), then the defaults in `application.yml`.
 Defaults are defined once in `AuditDefaults.java`: `application.yml` repeats them as
 `${ENV_VAR:default}`, `AuditProperties` falls back to them when a key is missing, and
 `AuditPropertiesDefaultsTest` fails if the two differ. `.env.example` lists what to set per
@@ -58,7 +61,7 @@ its default (MongoDB on localhost, the default internal API key).
 | `SPRING_PROFILES_ACTIVE` | none | `dev` locally, `prod` for staging/production |
 | `AUDIT_ENVIRONMENT` | `development` | Events from any other environment are dead-lettered |
 | `KAFKA_BOOTSTRAP_SERVERS` | `146.88.24.113:9092` | Brokers |
-| `EUREKA_URL` | `http://146.88.24.113:8761/eureka/` | Service registry |
+| `EUREKA_DEFAULT_ZONE` | `http://146.88.24.113:8761/eureka/` | Service registry (`EUREKA_URL` still honoured) |
 | `AUDIT_TOPIC` / `ACCESS_TOPIC` | `platform.audit.events` / `platform.access.events` | Contract defaults (`EventTopics`) |
 | `AUDIT_MONGO_WRITE_URI` / `AUDIT_MONGO_READ_URI` | `mongodb://localhost:27017/?replicaSet=rs0` / the write URI | Separate users and pools for writes and reads |
 | `AUDIT_HOT_DAYS` / `ACCESS_HOT_DAYS` | `30` / `30` | Days a document stays in MongoDB before it may be archived |
@@ -66,7 +69,7 @@ its default (MongoDB on localhost, the default internal API key).
 | `AUDIT_ARCHIVE_STORE` | `NONE` | `NONE` never deletes anything; `LOCAL` is for dev/tests |
 | `AUDIT_INTERNAL_API_KEY` | `apargo-audit-internal-key` | Required for `/internal/**`; **override it** in every shared environment |
 | `AUDIT_INTERNAL_ALLOWED_CALLERS` | `*` | Caller names allowed on `/internal/**`; `*` = any caller with the key |
-| `AUDIT_CORS_ALLOWED_ORIGINS` | `*` | Browser origins; `*` = all, comma-separated list to restrict |
+| `AUDIT_CORS_ALLOWED_ORIGINS` | `CORS_ALLOWED_ORIGINS`, else `*` | Browser origins; `*` = all, comma-separated list to restrict |
 | `AUDIT_MONGO_MANAGE_SCHEMA` | `true` | Create collections, validators and indexes at startup |
 
 Batching, retry, circuit breaker, query limits and archiver tuning are in `application.yml`.
